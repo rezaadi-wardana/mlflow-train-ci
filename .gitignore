@@ -1,0 +1,10 @@
+# MLflow artifacts
+artifacts/mlruns/
+artifacts/mlflow.db
+mlartifacts/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
