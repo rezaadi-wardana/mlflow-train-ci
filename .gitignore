@@ -3,6 +3,9 @@ artifacts/mlruns/
 artifacts/mlflow.db
 mlartifacts/
 
+# credit_docker model directory (large .pkl file ~1.18 GB)
+credit_docker/model_dir/model/
+
 # Python
 __pycache__/
 *.pyc

@@ -1,3 +1,4 @@
+import os
 import mlflow
 import json
 import pandas as pd
@@ -5,10 +6,14 @@ from mlflow.models import validate_serving_input
 # from mlflow.utils import convert_input_example_to_serving_input
 
 # ⬇️ Sesuaikan tracking URI dengan yang Anda gunakan
-mlflow.set_tracking_uri("sqlite:///../mlflow.db")  # relatif dari folder MLproject ke root
+
+# Hitung path absolut ke mlflow.db yang berada di root proyek (satu level di atas folder MLproject)
+db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "mlflow.db"))
+mlflow.set_tracking_uri(f"sqlite:///{db_path}")
+# mlflow.set_tracking_uri("sqlite:///../mlflow.db")  # relatif dari folder MLproject ke root
 
 # ⬇️ Ganti dengan run_id Anda
-run_id = "c68ee8b9fb7d4fc4aa6fe60b002da2f9"  # CONTOH, ganti dengan punya Anda
+run_id = "a6f62bd0684d472d95e4be78cd577770"  # CONTOH, ganti dengan punya Anda
 model_uri = f"runs:/{run_id}/model"
 
 # --------------------- 1. Data contoh untuk validasi (sama persis dengan modul) ---------------------
