@@ -8,8 +8,11 @@ import os
 import warnings
 import sys
  
-# mlflow.set_tracking_uri("sqlite:///../mlflow.db")   # dari folder MLproject naik satu level
-# mlflow.set_experiment("Latihan Credit Scoring")
+# Set MLflow tracking URI dari environment variable atau gunakan default
+mlflow_tracking_uri = os.environ.get("MLFLOW_TRACKING_URI")
+if mlflow_tracking_uri:
+    mlflow.set_tracking_uri(mlflow_tracking_uri)
+mlflow.set_experiment("Latihan Credit Scoring")
  
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
