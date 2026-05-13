@@ -11,3 +11,7 @@ __pycache__/
 *.pyc
 venv/
 .env
+
+# opsional, kalau ada .pkl lain di luar mlruns
+mlruns/
+*.pkl      
