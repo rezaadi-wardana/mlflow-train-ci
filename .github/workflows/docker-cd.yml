@@ -11,7 +11,6 @@ on:
 env:
   CSV_URL: "MLproject/train_pca.csv"
   TARGET_VAR: "Credit_Score"
-  # Gunakan database SQLite yang persisten selama job
   MLFLOW_TRACKING_URI: sqlite:///${{ github.workspace }}/mlflow.db
 
 jobs:
@@ -31,26 +30,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install mlflow==3.11.1 scikit-learn pandas numpy
 
-      # ❌ HAPUS langkah Clean previous mlflow data
-      # - name: Clean previous mlflow data
-      #   run: |
-      #     rm -f mlflow.db
-      #     rm -rf mlruns
+      # Hapus data lama agar run bersih (jika diinginkan)
+      - name: Clean previous mlflow data
+        run: |
+          rm -f mlflow.db
+          rm -rf mlruns
 
       - name: Run MLflow project
         run: |
-          mlflow run MLproject --env-manager=local --experiment-name "Latihan Credit Scoring"
+          mlflow run MLproject --env-manager=local
 
       - name: Get latest run ID
         run: |
-          # Tracking URI sudah diatur oleh env global, tidak perlu di-export ulang
-          RUN_ID=$(mlflow runs list \
-            --experiment-name "Latihan Credit Scoring" \
-            --order-by start_time DESC \
-            --limit 1 \
-            --output table \
-            | tail -n 1 \
-            | awk '{print $1}')
+          # Ambil run terbaru dari eksperimen default (ID 0) dalam format CSV
+          # Header CSV: Date,Name,ID
+          # Lewati header (tail -n +2), ambil kolom ke-3 (ID)
+          RUN_ID=$(mlflow runs list --experiment-id 0 --order-by start_time DESC --limit 1 --output csv | tail -n +2 | cut -d',' -f3)
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
           echo "Latest run_id: $RUN_ID"
 

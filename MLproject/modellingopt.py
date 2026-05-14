@@ -4,13 +4,16 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 import random
 import numpy as np
+import os 
  
 mlflow.set_tracking_uri("http://127.0.0.1:5000/")
  
 # Create a new MLflow Experiment
 mlflow.set_experiment("Latihan Credit Scoring")
  
-data = pd.read_csv("train_pca.csv")
+file_path = os.path.join(os.path.dirname(__file__), "..", "data", "train_pca.csv")
+data = pd.read_csv(file_path)
+# data = pd.read_csv("train_pca.csv") Salah ya harus masuk dulu ke folder wkwk
  
 X_train, X_test, y_train, y_test = train_test_split(
     data.drop("Credit_Score", axis=1),
