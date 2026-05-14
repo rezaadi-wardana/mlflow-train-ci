@@ -47,8 +47,7 @@ jobs:
       # 6. Jalankan pelatihan model
       - name: Run mlflow project
         run: |
-          mlflow run MLproject --env-manager=local -E "Latihan Credit Scoring"
-
+          mlflow run MLproject --env-manager=local --experiment-name "Credit_Score_Experiment"
       # 7. Ambil run_id terbaru dari folder mlruns (tanpa database, langsung dari path)
       - name: Get latest MLflow run_id
         run: |
