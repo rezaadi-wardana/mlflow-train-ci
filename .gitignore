@@ -15,3 +15,5 @@ venv/
 # opsional, kalau ada .pkl lain di luar mlruns
 mlruns/
 *.pkl   
+mlflow.db
+
