@@ -2,80 +2,30 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
-
-permissions:
-  contents: write
+    branches: [main]
 
 env:
-  CSV_URL: "MLproject/train_pca.csv"
   MLFLOW_TRACKING_URI: sqlite:///${{ github.workspace }}/mlflow.db
 
 jobs:
-  build:
+  train:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set up Python 3.12.7
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: "3.12.7"
-
-      - name: Check Env
-        run: echo $CSV_URL
-
       - name: Install dependencies
+        run: pip install mlflow==3.11.1 scikit-learn pandas numpy
+      - name: Run training
+        run: mlflow run MLproject --env-manager=local --experiment-name "Latihan Credit Scoring"
+      - name: Save run ID
         run: |
-          python -m pip install --upgrade pip
-          pip install mlflow==3.11.1 scikit-learn pandas numpy
-
-      # Bersihkan data lama agar setiap run bersih
-      - name: Clean previous mlflow data
-        run: |
-          rm -f mlflow.db
-          rm -rf mlruns
-
-      - name: Run mlflow project
-        run: |
-          mlflow run MLproject --env-manager=local
-
-      # Setup Git LFS untuk menghandle file besar
-      - name: Set up Git LFS
-        run: |
-          git config --global user.name ${{ secrets.username }}
-          git config --global user.email ${{ secrets.email }}
-          git lfs install
-          git lfs track "mlruns/**"
-          git lfs track "*.pkl"
-          git add .gitattributes
-          git commit -m "Track large files in mlruns with Git LFS" || true
-
-      # Simpan hasil (mlruns & database) kembali ke repository
-      - name: Save mlruns to repo
-        run: |
-          git config --global user.name ${{ secrets.username }}
-          git config --global user.email ${{ secrets.email }}
-          git add -f mlruns/ mlflow.db
-          git commit -m "Save mlruns and mlflow.db from CI run" || true
-          git pull --rebase origin main || true
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Opsional: upload ke Google Drive (jalankan jika sudah siap)
-      # - name: Install Python dependencies for Google Drive
-      #   run: |
-      #     pip install --upgrade google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
-
-      # - name: Upload to Google Drive
-      #   env:
-      #     GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }}
-      #     GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
-      #   run: |
-      #     python MLproject/upload_to_gdrive.py
+          RUN_ID=$(mlflow runs list --experiment-name "Latihan Credit Scoring" --order-by start_time DESC --limit 1 --output table | tail -n 1 | awk '{print $1}')
+          echo "RUN_ID=$RUN_ID" > run_id.txt
+      - uses: actions/upload-artifact@v3
+        with:
+          name: run-id
+          path: run_id.txt
