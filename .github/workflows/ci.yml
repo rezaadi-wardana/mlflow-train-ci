@@ -41,9 +41,13 @@ jobs:
           rm -f mlflow.db
           rm -rf mlruns
 
+      # - name: Run mlflow project
+      #   run: |
+      #     mlflow run MLproject --env-manager=local
+
       - name: Run mlflow project
         run: |
-          mlflow run MLproject --env-manager=local
+          mlflow run MLproject --env-manager=local --experiment-name "Latihan Credit Scoring"
 
       # Setup Git LFS untuk menghandle file besar
       - name: Set up Git LFS
