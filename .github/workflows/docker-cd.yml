@@ -114,25 +114,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install mlflow==3.11.1 scikit-learn pandas numpy
 
-      # ❌ Hapus langkah Clean untuk debugging sementara (opsional, bisa diaktifkan lagi nanti)
-      # - name: Clean previous mlflow data
-      #   run: |
-      #     rm -f mlflow.db
-      #     rm -rf mlruns
-
       - name: Run MLflow project
         run: |
           mlflow run MLproject --env-manager=local --experiment-name "Latihan Credit Scoring"
 
-      # Debug: lihat isi eksperimen 1
-      - name: Debug run list
+      # Debug: lihat eksperimen dan isi eksperimen 1
+      - name: Debug runs
         run: |
-          echo "=== All experiments ==="
-          mlflow experiments list --output csv
-          echo "=== Runs in experiment 1 ==="
+          echo "=== All experiments (search) ==="
+          mlflow experiments search
+          echo "=== Runs in experiment 1 (CSV) ==="
           mlflow runs list --experiment-id 1 --output csv
 
-      # Ambil run ID dengan Python (lebih andal)
+      # Ambil run ID dengan Python (paling andal)
       - name: Get latest run ID
         run: |
           RUN_ID=$(python -c "
@@ -140,7 +134,6 @@ jobs:
           db_path = os.path.expanduser('${{ github.workspace }}/mlflow.db')
           conn = sqlite3.connect(db_path)
           c = conn.cursor()
-          # Ambil run_id terbaru dari eksperimen 1
           c.execute(\"SELECT run_uuid FROM runs WHERE experiment_id=1 ORDER BY start_time DESC LIMIT 1\")
           row = c.fetchone()
           conn.close()
