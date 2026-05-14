@@ -47,11 +47,14 @@ jobs:
       # 6. Jalankan pelatihan model
       - name: Run mlflow project
         run: |
-          mlflow run MLproject --env-manager=local --experiment-name "Credit_Score_Experiment"
+          mlflow run MLproject --env-manager=local --experiment-name "Latihan Credit Scoring"
       # 7. Ambil run_id terbaru dari folder mlruns (tanpa database, langsung dari path)
+
       - name: Get latest MLflow run_id
-        run: |
-          RUN_ID=$(ls -td mlruns/0/*/ | head -n 1 | cut -d'/' -f3)
+        run: | # Pastikan MLflow mengenali tracking URI yang sudah diset
+          export MLFLOW_TRACKING_URI="${{ github.workspace }}/mlflow.db"
+          RUN_ID=$(mlflow runs list --experiment-name "Latihan Credit Scoring" \
+                  --order-by start_time DESC --limit 1 --output table | tail -n 1 | awk '{print $1}')
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
           echo "Latest run_id: $RUN_ID"
 
