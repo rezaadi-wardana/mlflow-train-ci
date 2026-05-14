@@ -118,15 +118,6 @@ jobs:
         run: |
           mlflow run MLproject --env-manager=local --experiment-name "Latihan Credit Scoring"
 
-      # Debug: lihat eksperimen dan isi eksperimen 1
-      - name: Debug runs
-        run: |
-          echo "=== All experiments (search) ==="
-          mlflow experiments search
-          echo "=== Runs in experiment 1 (CSV) ==="
-          mlflow runs list --experiment-id 1 --output csv
-
-      # Ambil run ID dengan Python (paling andal)
       - name: Get latest run ID
         run: |
           RUN_ID=$(python -c "
@@ -139,7 +130,7 @@ jobs:
           conn.close()
           print(row[0] if row else '')
           ")
-          if [ -z "$RUN_ID" ]; then
+                  if [ -z "$RUN_ID" ]; then
             echo "Error: No run found in experiment 1"
             exit 1
           fi
